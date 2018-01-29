@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DevHub.BLL.Core.Interface;
+using DevHub.DAL.Models;
 
 namespace DevHub.Core.Controllers
 {
@@ -19,12 +20,12 @@ namespace DevHub.Core.Controllers
             _user = user;
         }
 
-        [HttpGet("Add")]
-        public IActionResult Add()
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] MembershipModel model)
         {
             return Ok(new
             {
-                data = _user.AddAsync()
+                data = _user.AddAsync(model)
             });
         }
 

@@ -16,7 +16,7 @@ namespace DevHub.DAL.Entities
         public string Name { get; set; }
         public string NormalizedName { get; set; }
 
-        public virtual ICollection<AspNetRoleClaims> AspNetRoleClaims { get; set; }
-        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public ICollection<AspNetRoleClaims> AspNetRoleClaims { get; set; }
+        public ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
     }
 }

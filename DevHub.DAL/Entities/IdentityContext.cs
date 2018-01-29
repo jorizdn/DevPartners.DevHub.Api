@@ -11,8 +11,8 @@ namespace DevHub.DAL.Entities
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
-        public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
 
         public IdentityContext(DbContextOptions<IdentityContext> options) : base(options) { }
 
@@ -20,12 +20,9 @@ namespace DevHub.DAL.Entities
         {
             modelBuilder.Entity<AspNetRoleClaims>(entity =>
             {
-                entity.HasIndex(e => e.RoleId)
-                    .HasName("IX_AspNetRoleClaims_RoleId");
+                entity.HasIndex(e => e.RoleId);
 
-                entity.Property(e => e.RoleId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                entity.Property(e => e.RoleId).IsRequired();
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.AspNetRoleClaims)
@@ -36,25 +33,21 @@ namespace DevHub.DAL.Entities
             {
                 entity.HasIndex(e => e.NormalizedName)
                     .HasName("RoleNameIndex")
-                    .IsUnique();
+                    .IsUnique()
+                    .HasFilter("([NormalizedName] IS NOT NULL)");
 
-                entity.Property(e => e.Id).HasMaxLength(450);
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedName)
-                    .IsRequired()
-                    .HasMaxLength(256);
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
             });
 
             modelBuilder.Entity<AspNetUserClaims>(entity =>
             {
-                entity.HasIndex(e => e.UserId)
-                    .HasName("IX_AspNetUserClaims_UserId");
+                entity.HasIndex(e => e.UserId);
 
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                entity.Property(e => e.UserId).IsRequired();
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserClaims)
@@ -63,19 +56,11 @@ namespace DevHub.DAL.Entities
 
             modelBuilder.Entity<AspNetUserLogins>(entity =>
             {
-                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey })
-                    .HasName("PK_AspNetUserLogins");
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
 
-                entity.HasIndex(e => e.UserId)
-                    .HasName("IX_AspNetUserLogins_UserId");
+                entity.HasIndex(e => e.UserId);
 
-                entity.Property(e => e.LoginProvider).HasMaxLength(450);
-
-                entity.Property(e => e.ProviderKey).HasMaxLength(450);
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                entity.Property(e => e.UserId).IsRequired();
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserLogins)
@@ -84,15 +69,9 @@ namespace DevHub.DAL.Entities
 
             modelBuilder.Entity<AspNetUserRoles>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.RoleId })
-                    .HasName("PK_AspNetUserRoles");
+                entity.HasKey(e => new { e.UserId, e.RoleId });
 
-                entity.HasIndex(e => e.RoleId)
-                    .HasName("IX_AspNetUserRoles_RoleId");
-
-                entity.Property(e => e.UserId).HasMaxLength(450);
-
-                entity.Property(e => e.RoleId).HasMaxLength(450);
+                entity.HasIndex(e => e.RoleId);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.AspNetUserRoles)
@@ -103,18 +82,6 @@ namespace DevHub.DAL.Entities
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<AspNetUserTokens>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name })
-                    .HasName("PK_AspNetUserTokens");
-
-                entity.Property(e => e.UserId).HasMaxLength(450);
-
-                entity.Property(e => e.LoginProvider).HasMaxLength(450);
-
-                entity.Property(e => e.Name).HasMaxLength(450);
-            });
-
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
                 entity.HasIndex(e => e.NormalizedEmail)
@@ -122,9 +89,10 @@ namespace DevHub.DAL.Entities
 
                 entity.HasIndex(e => e.NormalizedUserName)
                     .HasName("UserNameIndex")
-                    .IsUnique();
+                    .IsUnique()
+                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
-                entity.Property(e => e.Id).HasMaxLength(450);
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
@@ -132,13 +100,18 @@ namespace DevHub.DAL.Entities
 
                 entity.Property(e => e.LastName).HasMaxLength(256);
 
+                entity.Property(e => e.MiddleName).HasMaxLength(256);
+
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedUserName)
-                    .IsRequired()
-                    .HasMaxLength(256);
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<AspNetUserTokens>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
             });
         }
     }

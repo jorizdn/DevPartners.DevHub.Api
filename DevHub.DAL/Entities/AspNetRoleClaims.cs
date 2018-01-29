@@ -10,6 +10,6 @@ namespace DevHub.DAL.Entities
         public string ClaimValue { get; set; }
         public string RoleId { get; set; }
 
-        public virtual AspNetRoles Role { get; set; }
+        public AspNetRoles Role { get; set; }
     }
 }

@@ -10,6 +10,6 @@ namespace DevHub.DAL.Entities
         public string ProviderDisplayName { get; set; }
         public string UserId { get; set; }
 
-        public virtual AspNetUsers User { get; set; }
+        public AspNetUsers User { get; set; }
     }
 }

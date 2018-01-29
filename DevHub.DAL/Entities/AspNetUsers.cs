@@ -29,9 +29,10 @@ namespace DevHub.DAL.Entities
         public string UserName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string MiddleName { get; set; }
 
-        public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
-        public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
-        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
+        public ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
+        public ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
     }
 }

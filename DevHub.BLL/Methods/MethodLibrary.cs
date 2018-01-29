@@ -161,7 +161,8 @@ namespace DevHub.BLL.Methods
                     Message = !string.IsNullOrEmpty(model.Remarks) ? model.Remarks : "No Message",
                     ContactNumber = client.ContactNumber1 + ", " + client.ContactNumber2,
                     IsAdmin = false,
-                    Rate = rate
+                    Rate = rate,
+                    Space = space
                 };
 
                 switch (model.SpaceType)
@@ -266,10 +267,10 @@ namespace DevHub.BLL.Methods
                 if (!await _roleManager.RoleExistsAsync(Role))
                 {
                     var role = new IdentityRole<string>(Role);
-
+                    await _roleManager.CreateAsync(role);
                     await _roleManager.AddClaimAsync(role, new Claim(ClaimType, ClaimValue));
 
-                    await _roleManager.CreateAsync(role);
+                    
                 }
             }
             catch (Exception e)
