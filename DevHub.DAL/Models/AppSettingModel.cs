@@ -12,5 +12,8 @@ namespace DevHub.DAL.Models
         //Email
         public string SenderEmail { get; set; }
         public string Password { get; set; }
+
+        //WebConfig
+        public string Protocol { get; set; }
     }
 }

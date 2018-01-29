@@ -3,6 +3,7 @@ using DevHub.DAL.Identity;
 using DevHub.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -15,11 +16,13 @@ namespace DevHub.BLL.Methods
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole<string>> _roleManager;
+        private readonly IOptions<AppSettingModel> _options;
 
-        public MethodLibrary(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<string>> roleManager)
+        public MethodLibrary(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<string>> roleManager, IOptions<AppSettingModel> options)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _options = options;
         }
 
         public string GetSpaceName(int space)
@@ -140,12 +143,12 @@ namespace DevHub.BLL.Methods
             }
         }
 
-        public EmailParameters GetApproveEmailParameter(UserInfo model, bool isAdmin, ClientMaster client, bool haveBookedBefore)
+        public EmailParameters GetApproveEmailParameter(EmailParametersModel model, bool isAdmin)
         {
-            var space = GetSpaceName(model.SpaceType);
-            var firstname = haveBookedBefore ? client.FirstName : model.FirstName;
-            var lastname = haveBookedBefore ? client.LastName : model.LastName;
-            var rate = GetBookRate(model.FrequencyType, model.SpaceType);
+            var space = GetSpaceName(model.UserInfo.SpaceType);
+            var firstname = model.UserInfo.HaveBookedBefore ? model.Client.FirstName : model.UserInfo.FirstName;
+            var lastname = model.UserInfo.HaveBookedBefore ? model.Client.LastName : model.UserInfo.LastName;
+            var rate = GetBookRate(model.UserInfo.FrequencyType, model.UserInfo.SpaceType);
 
             if (!isAdmin)
             {
@@ -154,18 +157,20 @@ namespace DevHub.BLL.Methods
                     Subject = $"Dev Hub: Confirming Booking!",
                     Firstname = firstname,
                     Lastname = lastname,
-                    Email = client.Email,
-                    Recipient = client.Email,
+                    Email = model.Client.Email,
+                    Recipient = model.Client.Email,
                     Template = "Add-Booking-Template",
-                    Date = model.DateOfArrival.ToString("MMMM dd, yyyy"),
-                    Message = !string.IsNullOrEmpty(model.Remarks) ? model.Remarks : "No Message",
-                    ContactNumber = client.ContactNumber1 + ", " + client.ContactNumber2,
+                    Date = model.UserInfo.DateOfArrival.ToString("MMMM dd, yyyy"),
+                    Message = !string.IsNullOrEmpty(model.UserInfo.Remarks) ? model.UserInfo.Remarks : "No Message",
+                    ContactNumber = model.Client.ContactNumber1 + ", " + model.Client.ContactNumber2,
                     IsAdmin = false,
                     Rate = rate,
+                    RoomType = model.UserInfo.RoomType,
+                    GuestCount = model.UserInfo.PersonCount,
                     Space = space
                 };
 
-                switch (model.SpaceType)
+                switch (model.UserInfo.SpaceType)
                 {
                     case (int)SpaceEnum.ConferenceMeeting:
 
@@ -183,19 +188,22 @@ namespace DevHub.BLL.Methods
                     Subject = $"Dev Hub: New Booking Request!",
                     Firstname = firstname,
                     Lastname = lastname,
-                    Email = client.Email,
+                    Email = model.Client.Email,
                     Space = space,
-                    Recipient = client.Email,
+                    Recipient = model.Client.Email,
                     Template = "Add-Admin-Booking-Template",
-                    Date = model.DateOfArrival.ToString("MMMM dd, yyyy"),
+                    Date = model.UserInfo.DateOfArrival.ToString("MMMM dd, yyyy"),
                     IsFromDevhub = true,
-                    Message = !string.IsNullOrEmpty(model.Remarks) ? model.Remarks : "No Message",
-                    ContactNumber = client.ContactNumber1 + ", " + client.ContactNumber2,
+                    Message = !string.IsNullOrEmpty(model.UserInfo.Remarks) ? model.UserInfo.Remarks : "No Message",
+                    ContactNumber = model.Client.ContactNumber1 + ", " + model.Client.ContactNumber2,
                     IsAdmin = true,
-                    Rate = rate
+                    Rate = rate,
+                    RoomType = model.UserInfo.RoomType,
+                    GuestCount = model.UserInfo.PersonCount,
+                    Link = _options.Value.Protocol + model.Uri + "/#!/Confirm?token=" + model.UserInfo.RefCode + model.Id
                 };
 
-                switch (model.SpaceType)
+                switch (model.UserInfo.SpaceType)
                 {
                     case (int)SpaceEnum.ConferenceMeeting:
                         emailParams.Template = "Add-Admin-Booking-Conference-Template";

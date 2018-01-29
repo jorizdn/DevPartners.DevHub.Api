@@ -44,6 +44,7 @@ namespace DevHub.BLL.Methods
                     .Replace("^RoomType^", model.RoomType)
                     .Replace("^ReferenceNumber^", model.ReferenceNumber)
                     .Replace("^ConfirmedBy^", confirmedBy)
+                    .Replace("^Link^", model.Link)
             };
 
             var emailMessage = new MimeMessage

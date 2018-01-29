@@ -68,6 +68,7 @@ namespace DevHub.Core.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> AddAsync([FromBody] UserInfo model)
         {
+            var uri = HttpContext.Request.Host.Value;
             var token = await _checkForgery.CheckToken();
 
             if (token != null)
@@ -80,7 +81,7 @@ namespace DevHub.Core.Controllers
             {
                 var response = _response.ShowHttpResponse(_response.Ok);
                 response.Details = validate.Message;
-                var result = await _book.AddBookLogAsync(model);
+                var result = await _book.AddBookLogAsync(model, uri);
 
                 if (result.State.isValid)
                 {

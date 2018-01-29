@@ -29,7 +29,7 @@ namespace DevHub.BLL.Core.Repository
             _email = email;
         }
 
-        public async Task<BookLogInfo> AddBookLogAsync(UserInfo model)
+        public async Task<BookLogInfo> AddBookLogAsync(UserInfo model, string uri)
         {
             var clientEmail = _query.GetClientByEmail(model.Email);
             var isClientExists = clientEmail != null;
@@ -38,6 +38,7 @@ namespace DevHub.BLL.Core.Repository
 
             var booklog = _mapper.Map<BookLog>(model);
             booklog.Guid = Guid.NewGuid();
+            model.RefCode = booklog.Guid.ToString();
             booklog.BookingType = Convert.ToByte(model.BookType);
             booklog.BookStatus = model.BookStatus < 1 ? Convert.ToByte((int)BookStatusEnum.Pending) : Convert.ToByte(model.BookStatus);
             if (!model.HaveBookedBefore && !isClientExists)
@@ -48,7 +49,7 @@ namespace DevHub.BLL.Core.Repository
                 client.ContactNumber2 = contacts[1].ContactNumber;
 
                 _context.Add(client);
-                _context.SaveChanges();
+                //_context.SaveChanges();
 
                 booklog.ClientId = client.ClientId;
 
@@ -60,10 +61,10 @@ namespace DevHub.BLL.Core.Repository
                     booklog.ClientId = clientEmail.ClientId;
                     
                     clientEmail.ContactNumber1 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(0).ContactNumber) ? client.ContactNumber1 : model.ContactNumber.ElementAt(0).ContactNumber;
-                    clientEmail.ContactNumber2 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(1).ContactNumber) ? client.ContactNumber2 : model.ContactNumber.ElementAt(1).ContactNumber; ;
+                    clientEmail.ContactNumber2 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(1).ContactNumber) ? client.ContactNumber2 : model.ContactNumber.ElementAt(1).ContactNumber;
 
                     _context.Update(clientEmail);
-                    _context.SaveChanges();
+                    //_context.SaveChanges();
                 }
                 else
                 {
@@ -101,12 +102,19 @@ namespace DevHub.BLL.Core.Repository
             };
 
             _context.Add(booklog);
-            _context.SaveChanges();
+            //_context.SaveChanges();
 
             if (model.BookType == (int)BookingTypeEnum.DevHub)
             {
-                await _email.SendEmail(_method.GetApproveEmailParameter(model, false, isClientExists ? clientEmail : client, model.HaveBookedBefore),"Admin");
-                await _email.SendEmail(_method.GetApproveEmailParameter(model, true, isClientExists ? clientEmail : client, model.HaveBookedBefore),"Admin");
+                var emailParams = new EmailParametersModel()
+                {
+                    UserInfo = model,
+                    Client = isClientExists ? clientEmail : client,
+                    Uri = uri,
+                    Id = booklog.Id
+                };
+                await _email.SendEmail(_method.GetApproveEmailParameter(emailParams, false),"");
+                await _email.SendEmail(_method.GetApproveEmailParameter(emailParams,  true),"");
             }
 
             return book;

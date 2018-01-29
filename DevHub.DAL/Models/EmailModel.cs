@@ -11,6 +11,7 @@
         public string Subject { get; set; }
         public string Template { get; set; }
         public string Sender { get; set; }
+        public string Link { get; set; }
 
         public bool IsFromDevhub { get; set; }
         public string Space { get; set; }

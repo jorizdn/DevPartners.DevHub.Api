@@ -33,6 +33,7 @@ namespace DevHub.DAL.Models
         public bool HaveBookedBefore { get; set; }
         public int BookStatus { get; set; }
         public int BookType { get; set; }
+        public string RefCode { get; set; }
     }
 
     public class ContactUserInfo
@@ -73,8 +74,16 @@ namespace DevHub.DAL.Models
         {
             return DateArrival + " " +  TimeIn + " - " + DateDeparture + " " + TimeOut;
         }
-
     }
+
+    public class EmailParametersModel
+    {
+        public UserInfo UserInfo { get; set; }
+        public ClientMaster Client { get; set; }
+        public string Uri { get; set; }
+        public int Id { get; set; }
+    }
+
 
 
 }
