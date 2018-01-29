@@ -1,4 +1,5 @@
-﻿using DevHub.DAL.Identity;
+﻿using DevHub.DAL.Entities;
+using DevHub.DAL.Identity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace DevHub.DAL.Models
 
     public class LoginInfoModel
     {
-        public AspNetUser User { get; set; }
+        public AspNetUsers User { get; set; }
         public StatusResponse State { get; set; }
     }
 }

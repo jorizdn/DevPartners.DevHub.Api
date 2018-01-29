@@ -13,32 +13,34 @@ namespace DevHub.BLL.ConfigServices
         {
 
             services.Configure<IdentityOptions>(options => options.IdentityOptions());
-            services.ConfigureApplicationCookie(options => options.ExpireTimeSpan = TimeSpan.FromDays(3));
-            services.ConfigureApplicationCookie(options => options.Events = new CookieAuthenticationEvents {
-                OnRedirectToLogin = ctx =>
+            services.ConfigureApplicationCookie(options => {
+                options.ExpireTimeSpan = TimeSpan.FromDays(3);
+                options.Events = new CookieAuthenticationEvents
                 {
-
-                    //This will stop from redirecting to Login Page like the MVC.
-
-                    if (ctx.Request.Path.StartsWithSegments("/devhubapi") && ctx.Response.StatusCode == 200)
+                    OnRedirectToLogin = ctx =>
                     {
-                        ctx.Response.StatusCode = 401;
-                    }
 
-                    return Task.CompletedTask;
-                },
-                OnRedirectToAccessDenied = ctx =>
-                {
+                        //This will stop from redirecting to Login Page like the MVC.
 
-                    if (ctx.Request.Path.StartsWithSegments("/devhubapi") && ctx.Response.StatusCode == 200)
+                        if (ctx.Request.Path.StartsWithSegments("/devhubapi") && ctx.Response.StatusCode == 200)
+                        {
+                            ctx.Response.StatusCode = 401;
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = ctx =>
                     {
-                        ctx.Response.StatusCode = 403;
-                    }
 
-                    return Task.CompletedTask;
-                }
+                        if (ctx.Request.Path.StartsWithSegments("/devhubapi") && ctx.Response.StatusCode == 200)
+                        {
+                            ctx.Response.StatusCode = 403;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
 
             return services;
         }

@@ -105,8 +105,8 @@ namespace DevHub.BLL.Core.Repository
 
             if (model.BookType == (int)BookingTypeEnum.DevHub)
             {
-                await _email.SendEmail(_method.GetApproveEmailParameter(model, false, isClientExists ? clientEmail : client, model.HaveBookedBefore),"");
-                await _email.SendEmail(_method.GetApproveEmailParameter(model, true, isClientExists ? clientEmail : client, model.HaveBookedBefore),"");
+                await _email.SendEmail(_method.GetApproveEmailParameter(model, false, isClientExists ? clientEmail : client, model.HaveBookedBefore),"Admin");
+                await _email.SendEmail(_method.GetApproveEmailParameter(model, true, isClientExists ? clientEmail : client, model.HaveBookedBefore),"Admin");
             }
 
             return book;

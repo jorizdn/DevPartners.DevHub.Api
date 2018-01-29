@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using DevHub.DAL.Entities;
 
 namespace DevHub.DAL.Identity
 {
-    public class ApplicationDbContext : IdentityDbContext<AspNetUser, IdentityRole<string>, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<string>, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

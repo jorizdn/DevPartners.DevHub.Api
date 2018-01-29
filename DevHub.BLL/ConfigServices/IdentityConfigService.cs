@@ -1,4 +1,5 @@
-﻿using DevHub.DAL.Identity;
+﻿using DevHub.DAL.Entities;
+using DevHub.DAL.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -17,17 +18,15 @@ namespace DevHub.BLL.ConfigServices
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnection));
 
             ////Identity Configuration
-            services.AddIdentity<AspNetUser, IdentityRole<string>>(opt =>
+            services.AddIdentity<ApplicationUser, IdentityRole<string>>(opt =>
             {
-
-
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<RoleManager<IdentityRole<string>>>();
 
-            services.AddScoped<UserManager<AspNetUser>>();
+            services.AddScoped<UserManager<ApplicationUser>>();
 
             return services;
         }

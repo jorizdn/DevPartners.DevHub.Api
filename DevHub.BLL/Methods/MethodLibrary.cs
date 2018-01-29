@@ -13,10 +13,10 @@ namespace DevHub.BLL.Methods
 {
     public class MethodLibrary
     {
-        private readonly UserManager<AspNetUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole<string>> _roleManager;
 
-        public MethodLibrary(UserManager<AspNetUser> userManager, RoleManager<IdentityRole<string>> roleManager)
+        public MethodLibrary(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<string>> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -201,7 +201,7 @@ namespace DevHub.BLL.Methods
                         return emailParams;
 
                     default:
-                        return null;
+                        return emailParams;
                 }
             }
         }
@@ -278,7 +278,7 @@ namespace DevHub.BLL.Methods
             }
         }
 
-        public async Task<AspNetUser> CheckAndReturnUserAsync(string input)
+        public async Task<ApplicationUser> CheckAndReturnUserAsync(string input)
         {
             var user = await _userManager.FindByEmailAsync(input);
             if (user == null)

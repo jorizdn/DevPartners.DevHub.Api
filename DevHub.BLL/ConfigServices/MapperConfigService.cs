@@ -26,7 +26,7 @@ namespace DevHub.BLL.ConfigServices
 
             CreateMap<AspNetUserRoles, IdentityUserRole<string>>();
             CreateMap<AspNetUserClaims, IdentityUserClaim<string>>();
-            CreateMap<AspNetUser, AspNetUsers>();
+            CreateMap<ApplicationUser, AspNetUsers>();
         }
     }
 

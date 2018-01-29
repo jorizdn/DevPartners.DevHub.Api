@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using DevHub.BLL.Core.Interface;
 using DevHub.DAL.Models;
 using DevHub.BLL.Helpers;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace DevHub.Core.Controllers
 {
@@ -16,6 +17,7 @@ namespace DevHub.Core.Controllers
     {
         private readonly IAccountInterface _account;
         private readonly HttpResponses _response;
+        private readonly IAntiforgery _antiforgery;
 
         public AccountController(IAccountInterface account, HttpResponses response)
         {

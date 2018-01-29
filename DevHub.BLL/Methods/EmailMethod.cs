@@ -22,6 +22,8 @@ namespace DevHub.BLL.Methods
 
         public async Task SendEmail(EmailParameters model, string username)
         {
+            var confirmedBy = string.IsNullOrEmpty(username) ? "Admin" : username;
+
             var htmlFilePath = "./Templates/" + model.Template + ".html";
             var builder = new BodyBuilder
             {
@@ -41,7 +43,7 @@ namespace DevHub.BLL.Methods
                     .Replace("^Number^", model.GuestCount.ToString())
                     .Replace("^RoomType^", model.RoomType)
                     .Replace("^ReferenceNumber^", model.ReferenceNumber)
-                    .Replace("^ConfirmedBy^", username)
+                    .Replace("^ConfirmedBy^", confirmedBy)
             };
 
             var emailMessage = new MimeMessage

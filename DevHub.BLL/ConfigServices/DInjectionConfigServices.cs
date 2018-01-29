@@ -3,9 +3,6 @@ using DevHub.BLL.Core.Repository;
 using DevHub.BLL.Helpers;
 using DevHub.BLL.Methods;
 using DevHub.DAL.Entities;
-using DevHub.DAL.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DevHub.BLL.ConfigServices

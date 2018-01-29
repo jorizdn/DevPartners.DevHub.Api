@@ -14,10 +14,10 @@ namespace DevHub.BLL.Core.Repository
 {
     public class UserRepository : IUserInterface
     {
-        private readonly UserManager<AspNetUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly MethodLibrary _method;
 
-        public UserRepository(UserManager<AspNetUser> userManager, MethodLibrary method)
+        public UserRepository(UserManager<ApplicationUser> userManager, MethodLibrary method)
         {
             _userManager = userManager;
             _method = method;
@@ -26,7 +26,7 @@ namespace DevHub.BLL.Core.Repository
         public async Task<string> AddAsync()
         {
             await _method.AddRole("Admin", "IsAdmin", "IsAdmin");
-            var user = new AspNetUser() { FirstName = "Dev", LastName = "Partners", UserName = "DevPartners", Email = "info@devpartners.co" };
+            var user = new ApplicationUser() { FirstName = "Dev", LastName = "Partners", UserName = "DevPartners", Email = "info@devpartners.co" };
             var claim = new Claim("IsAdmin", "True");
 
             try

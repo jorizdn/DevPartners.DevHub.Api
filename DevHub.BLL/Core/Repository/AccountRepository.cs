@@ -17,13 +17,13 @@ namespace DevHub.BLL.Core.Repository
     public class AccountRepository : IAccountInterface
     {
         private readonly MethodLibrary _method;
-        private readonly SignInManager<AspNetUser> _manager;
+        private readonly SignInManager<ApplicationUser> _manager;
         private readonly DevHubContext _context;
         private readonly IdentityContext _identity;
         private readonly RoleManager<IdentityRole<string>> _roleManager;
         private readonly IMapper _mapper;
 
-        public AccountRepository(MethodLibrary method, SignInManager<AspNetUser> manager, DevHubContext context, RoleManager<IdentityRole<string>> roleManager, IdentityContext identity, IMapper mapper)
+        public AccountRepository(MethodLibrary method, SignInManager<ApplicationUser> manager, DevHubContext context, RoleManager<IdentityRole<string>> roleManager, IdentityContext identity, IMapper mapper)
         {
             _method = method;
             _manager = manager;
