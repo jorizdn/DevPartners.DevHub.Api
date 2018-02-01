@@ -1,28 +1,42 @@
 ﻿using DevHub.BLL.Core.Interface;
 using DevHub.BLL.Helpers;
 using DevHub.BLL.Methods;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DevHub.Core.Controllers
 {
     [Produces("application/json")]
     [Route("/Client")]
-    public class ClientController : Controller
+    public class ClientController : BaseController
     {
         private readonly IClientInterface _client;
         private readonly Validators _validate;
         private readonly HttpResponses _response;
+        private readonly IAntiforgery _antiforgery;
+        private readonly CheckForgery _checkForgery;
 
-        public ClientController(IClientInterface client, Validators validate, HttpResponses response)
+        public ClientController(IClientInterface client, Validators validate, HttpResponses response, IAntiforgery antiforgery, CheckForgery checkForgery)
         {
             _client = client;
             _validate = validate;
             _response = response;
+            _antiforgery = antiforgery;
+            _checkForgery = checkForgery;
         }
 
         [HttpGet("Get")]
-        public IActionResult Get(string email, int? id)
+        public async Task<IActionResult> GetAsync(string email, int? id)
         {
+            //if (!IsInRole)
+            //{
+            //    return BadRequest(new
+            //    {
+            //        status = _response.ShowHttpResponse(_response.Unauthorized)
+            //    });
+            //}
+
             if (!string.IsNullOrEmpty(email))
             {
                 var validate = _validate.IsEmailValid(email);

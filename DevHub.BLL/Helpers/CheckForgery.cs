@@ -18,7 +18,6 @@ namespace DevHub.BLL.Helpers
         }
         public async Task<string> CheckForgeryToken()
         {
-
             try
             {
                 await _antiforgery.ValidateRequestAsync(_accessor.HttpContext);

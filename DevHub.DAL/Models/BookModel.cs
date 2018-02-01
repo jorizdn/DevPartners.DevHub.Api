@@ -5,9 +5,6 @@ using System.Text;
 
 namespace DevHub.DAL.Models
 {
-    public class BookModel
-    {
-    }
 
     public class UserInfo
     {
@@ -84,6 +81,33 @@ namespace DevHub.DAL.Models
         public int Id { get; set; }
     }
 
+    public class ScheduleModel
+    {
+        public TimeSpan TimeIn { get; set; }
+        public TimeSpan TimeOut { get; set; }
+        public bool IsFutureSchedOnly { get; set; }
+    }
 
+    public class TimeConflictModel
+    {
+        public TimeSpan TimeIn { get; set; }
+        public TimeSpan TimeOut { get; set; }
+        public DateTime Date { get; set; }
+        public bool IsConference { get; set; }
+    }
+
+    public class TimeConflictReturnModel
+    {
+        public bool IsConflict { get; set; }
+        public IEnumerable<BookLog> ConflictedItem { get; set; }
+    }
+
+    public class BookModel
+    {
+        public IEnumerable<BookLog> Data { get; set; }
+        public TimeConflictReturnModel ConflictItems { get; set; }
+        public List<BookLog> Conference { get; set; }
+        public List<BookLog> Meeting { get; set; }
+    }
 
 }

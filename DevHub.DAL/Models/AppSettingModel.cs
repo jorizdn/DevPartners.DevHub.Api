@@ -15,5 +15,9 @@ namespace DevHub.DAL.Models
 
         //WebConfig
         public string Protocol { get; set; }
+
+        //ConnectionString
+        public string DefaultConnection { get; set; }
+        public string IdentityConnection { get; set; }
     }
 }

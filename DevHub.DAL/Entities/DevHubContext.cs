@@ -6,11 +6,13 @@ namespace DevHub.DAL.Entities
 {
     public partial class DevHubContext : DbContext
     {
+        public virtual DbSet<BillingTransaction> BillingTransaction { get; set; }
         public virtual DbSet<BookLog> BookLog { get; set; }
         public virtual DbSet<ClientMaster> ClientMaster { get; set; }
         public virtual DbSet<InvAddProducts> InvAddProducts { get; set; }
         public virtual DbSet<InvProductCategories> InvProductCategories { get; set; }
         public virtual DbSet<InvProducts> InvProducts { get; set; }
+        public virtual DbSet<InvTransactionOthers> InvTransactionOthers { get; set; }
         public virtual DbSet<InvUnitOfMeasure> InvUnitOfMeasure { get; set; }
         public virtual DbSet<TimeTrackingLogger> TimeTrackingLogger { get; set; }
 
@@ -18,13 +20,36 @@ namespace DevHub.DAL.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<BillingTransaction>(entity =>
+            {
+                entity.HasKey(e => e.BillingId);
+
+                entity.Property(e => e.BillingId)
+                    .HasColumnName("BillingID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.AmountPaid).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.BillingDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.OtherTransactionAmount).HasDefaultValueSql("((0))");
+            });
+
             modelBuilder.Entity<BookLog>(entity =>
             {
-                entity.Property(e => e.BookingRefCode).HasColumnType("varchar(15)");
+                entity.HasKey(e => e.BookingId);
+
+                entity.Property(e => e.BookingId).HasColumnName("BookingID");
+
+                entity.Property(e => e.BookingRefCode)
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ClientId)
                     .HasColumnName("ClientID")
-                    .HasDefaultValueSql("0");
+                    .HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.DateOfArrival).HasColumnType("datetime");
 
@@ -35,64 +60,77 @@ namespace DevHub.DAL.Entities
 
             modelBuilder.Entity<ClientMaster>(entity =>
             {
-                entity.HasKey(e => e.ClientId)
-                    .HasName("PK_ClientMaster");
+                entity.HasKey(e => e.ClientId);
 
                 entity.Property(e => e.ClientId).HasColumnName("ClientID");
 
                 entity.Property(e => e.ContactNumber1)
                     .IsRequired()
-                    .HasColumnType("varchar(15)");
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ContactNumber2).HasColumnType("varchar(15)");
+                entity.Property(e => e.ContactNumber2)
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Email)
                     .IsRequired()
-                    .HasColumnType("varchar(150)");
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.FirstName).HasColumnType("varchar(40)");
+                entity.Property(e => e.FirstName)
+                    .HasMaxLength(40)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.LastName).HasColumnType("varchar(40)");
+                entity.Property(e => e.LastName)
+                    .HasMaxLength(40)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.MiddleName).HasColumnType("varchar(40)");
+                entity.Property(e => e.MiddleName)
+                    .HasMaxLength(40)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<InvAddProducts>(entity =>
             {
-                entity.HasKey(e => e.RecId)
-                    .HasName("PK_inv_AddProducts");
+                entity.HasKey(e => e.RecId);
 
                 entity.ToTable("inv_AddProducts");
 
+                entity.Property(e => e.AddedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.DateTimeAdded)
                     .HasColumnType("datetime")
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ModifiedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ModifiedDateTime).HasColumnType("datetime");
 
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
-
-                entity.Property(e => e.Quantity).HasColumnType("decimal");
             });
 
             modelBuilder.Entity<InvProductCategories>(entity =>
             {
-                entity.HasKey(e => e.CategoryId)
-                    .HasName("PK_inv_ProductCategories");
+                entity.HasKey(e => e.CategoryId);
 
                 entity.ToTable("inv_ProductCategories");
 
-                entity.Property(e => e.CategoryId)
-                    .HasColumnName("CategoryID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
 
                 entity.Property(e => e.CategoryDesc)
                     .IsRequired()
-                    .HasColumnType("varchar(150)");
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<InvProducts>(entity =>
             {
-                entity.HasKey(e => e.ProductId)
-                    .HasName("PK_Products");
+                entity.HasKey(e => e.ProductId);
 
                 entity.ToTable("inv_Products");
 
@@ -100,48 +138,63 @@ namespace DevHub.DAL.Entities
 
                 entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
 
-                entity.Property(e => e.ProductDescription).HasColumnType("varchar(150)");
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ProductName)
                     .IsRequired()
-                    .HasColumnType("varchar(100)");
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Srp)
-                    .HasColumnName("SRP")
-                    .HasColumnType("decimal");
+                entity.Property(e => e.Srp).HasColumnName("SRP");
 
                 entity.Property(e => e.UomId).HasColumnName("uom_Id");
+            });
+
+            modelBuilder.Entity<InvTransactionOthers>(entity =>
+            {
+                entity.HasKey(e => e.RecId);
+
+                entity.ToTable("inv_TransactionOthers");
+
+                entity.Property(e => e.Quantity).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.TransactionDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
             });
 
             modelBuilder.Entity<InvUnitOfMeasure>(entity =>
             {
-                entity.HasKey(e => e.UomId)
-                    .HasName("PK_inv_UnitOfMeasure");
+                entity.HasKey(e => e.UomId);
 
                 entity.ToTable("inv_UnitOfMeasure");
 
-                entity.Property(e => e.UomId).HasColumnName("uom_Id");
+                entity.Property(e => e.UomId)
+                    .HasColumnName("uom_Id")
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.UomDesc)
                     .IsRequired()
                     .HasColumnName("uom_Desc")
-                    .HasColumnType("varchar(30)");
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<TimeTrackingLogger>(entity =>
             {
-                entity.HasKey(e => e.LogId)
-                    .HasName("PK_TimeTrackingLogger");
-
-                entity.Property(e => e.LogId).HasColumnName("LogID");
+                entity.HasKey(e => e.TimeTrackerId);
 
                 entity.Property(e => e.BookingId).HasColumnName("BookingID");
 
                 entity.Property(e => e.LoggedDateTime)
                     .HasColumnType("datetime")
-                    .HasDefaultValueSql("getdate()");
+                    .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Remarks).HasColumnType("varchar(2000)");
+                entity.Property(e => e.Remarks)
+                    .HasMaxLength(2000)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TimeIn).HasColumnName("Time_In");
 

@@ -1,4 +1,5 @@
 ﻿using DevHub.DAL.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -8,84 +9,84 @@ namespace DevHub.BLL.Methods
     {
         public StatusResponse IsUserBookInfoValid(UserInfo model)
         {
-            var error = new StatusResponse() { };
-            error.isValid = true;
+            var state = new StatusResponse() { };
+            state.isValid = true;
 
             if (!string.IsNullOrEmpty(model.Email))
             {
                 var emailValidate = IsEmailValid(model.Email);
                 if (emailValidate.isValid)
                 {
-                    error.isValid = true;
+                    state.isValid = true;
                 }
                 else
                 {
-                    error.isValid = false;
-                    error.Message = emailValidate.Message;
+                    state.isValid = false;
+                    state.Message = emailValidate.Message;
 
-                    return error;
+                    return state;
                 }
             }
             else
             {
-                error.isValid = false;
-                error.Message = "Email is empty";
+                state.isValid = false;
+                state.Message = "Email is empty";
 
-                return error;
+                return state;
             }
 
             if (!string.IsNullOrEmpty(model.DateOfArrival.ToString()) || !string.IsNullOrEmpty(model.DateOfDeparture.ToString()))
             {
                 if (model.DateOfArrival > model.DateOfDeparture)
                 {
-                    error.isValid = false;
-                    error.Message = "Date of Arrival should not be beyond the Date of Departure";
+                    state.isValid = false;
+                    state.Message = "Date of Arrival should not be beyond the Date of Departure";
 
-                    return error;
+                    return state;
                 }
                 else
                 {
-                    error.isValid = true;
+                    state.isValid = true;
                 }
             }
             else
             {
-                error.isValid = false;
-                error.Message = "Date of Arrival or Date of Departure is empty";
+                state.isValid = false;
+                state.Message = "Date of Arrival or Date of Departure is empty";
 
-                return error;
+                return state;
             }
 
             if (!string.IsNullOrEmpty(model.TimeIn.ToString()) || !string.IsNullOrEmpty(model.TimeOut.ToString()))
             {
                 if (model.TimeIn > model.TimeOut)
                 {
-                    error.isValid = false;
-                    error.Message = "Time In is not suppose to be set beyond of the Time Out.";
+                    state.isValid = false;
+                    state.Message = "Time In is not suppose to be set beyond of the Time Out.";
 
-                    return error;
+                    return state;
                 }
                 else
                 {
-                    error.isValid = true;
+                    state.isValid = true;
                 }
             }
             else
             {
-                error.isValid = false;
-                error.Message = "Time In or Time Out field is empty";
+                state.isValid = false;
+                state.Message = "Time In or Time Out field is empty";
 
-                return error;
+                return state;
             }
 
             if (!model.HaveBookedBefore)
             {
                 if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName))
                 {
-                    error.isValid = false;
-                    error.Message = "Name fields required.";
+                    state.isValid = false;
+                    state.Message = "Name fields required.";
 
-                    return error;
+                    return state;
                 }
 
                 foreach (var item in model.ContactNumber)
@@ -93,78 +94,132 @@ namespace DevHub.BLL.Methods
                     var phoneIsValid = IsPhoneNumberValid(item.ContactNumber);
                     if (!phoneIsValid.isValid)
                     {
-                        error.Message = phoneIsValid.Message + " : " + item.ContactNumber;
-                        error.isValid = false;
+                        state.Message = phoneIsValid.Message + " : " + item.ContactNumber;
+                        state.isValid = false;
 
-                        return error;
+                        return state;
                     }
                 }
             }
 
-            error.Message = "Model is Valid";
-            return error;
+            state.Message = "Model is Valid";
+            return state;
         }
+
         public StatusResponse IsEmailValid(string email)
         {
-            var error = new StatusResponse() { };
-            error.isValid = true;
+            var state = new StatusResponse() { };
+            state.isValid = true;
 
             if (!string.IsNullOrEmpty(email))
             {
                 if (new EmailAddressAttribute().IsValid(email))
                 {
-                    error.isValid = true;
+                    state.isValid = true;
                 }
                 else
                 {
-                    error.isValid = false;
-                    error.Message = "Email is not a valid email, Please check!";
+                    state.isValid = false;
+                    state.Message = "Email is not a valid email, Please check!";
 
-                    return error;
+                    return state;
                 }
             }
             else
             {
-                error.isValid = false;
-                error.Message = "Email is empty";
+                state.isValid = false;
+                state.Message = "Email is empty";
 
-                return error;
+                return state;
             }
 
-            return error;
+            return state;
 
         }
+
         public StatusResponse IsPhoneNumberValid(string phone)
         {
-            var error = new StatusResponse() { };
-            error.isValid = true;
+            var state = new StatusResponse() { };
+            state.isValid = true;
 
-            if (phone.Any(a => !char.IsNumber(a)))
+            if (phone != null)
             {
-                error.Message = "Phone Number should not contain letters and symbols alike.";
-                error.isValid = false;
+                if (phone.Any(a => !char.IsNumber(a)))
+                {
+                    state.Message = "Phone Number should not contain letters and symbols alike.";
+                    state.isValid = false;
 
-                return error;
+                    return state;
+                }
+
+                if (phone.Length > 11)
+                {
+                    state.Message = "Phone Number exceeded.";
+                    state.isValid = false;
+
+                    return state;
+                }
+
+                if (phone.Length < 11)
+                {
+                    state.Message = "Phone Number fall short of length.";
+                    state.isValid = false;
+
+                    return state;
+                }
             }
 
-            if (phone.Length > 11)
-            {
-                error.Message = "Phone Number exceeded.";
-                error.isValid = false;
-
-                return error;
-            }
-
-            if (phone.Length < 11)
-            {
-                error.Message = "Phone Number fall short of length.";
-                error.isValid = false;
-
-                return error;
-            }
-
-            error.Message = "Model is Valid";
-            return error;
+            state.Message = "Model is Valid";
+            return state;
         }
+
+        public StatusResponse IsTimeIntervalValid(TimeSpan TimeIn, TimeSpan TimeOut)
+        {
+            var state = new StatusResponse() { };
+            state.isValid = true;
+
+            if (!string.IsNullOrEmpty(TimeIn.ToString()) || !string.IsNullOrEmpty(TimeOut.ToString()))
+            {
+                if (TimeIn > TimeOut)
+                {
+                    state.isValid = false;
+                    state.Message = "Time In is not suppose to be set beyond of the Time Out.";
+
+                    return state;
+                }
+                else
+                {
+                    state.isValid = true;
+                }
+            }
+            else
+            {
+                state.isValid = false;
+                state.Message = "Time In or Time Out field is empty";
+
+                return state;
+            }
+
+            state.Message = "Model is Valid";
+            return state;
+        }
+
+        public StatusResponse IsInventoryModelValid(InventoryModel model)
+        {
+            var state = new StatusResponse();
+            state.isValid = true;
+            state.Message = "Model is valid";
+
+            if (string.IsNullOrEmpty(model.Username))
+            {
+                state.isValid = false;
+                state.Message = "User not logged in.";
+
+                return state;
+            }
+
+            return state;
+        }
+
     }
 }

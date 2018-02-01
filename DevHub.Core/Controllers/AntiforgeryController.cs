@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DevHub.Core.Controllers
 {
     [Produces("application/json")]
     [Route("/Antiforgery")]
-    public class AntiforgeryController : Controller
+    public class AntiforgeryController : BaseController
     {
         private readonly IAntiforgery _antiforgery;
         public AntiforgeryController(IAntiforgery antiforgery)

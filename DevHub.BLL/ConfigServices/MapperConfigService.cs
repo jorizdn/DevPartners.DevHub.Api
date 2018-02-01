@@ -20,7 +20,7 @@ namespace DevHub.BLL.ConfigServices
             CreateMap<ClientMaster, BookLogInfo>();
 
             CreateMap<BookLog, TimeTrackingLogger>()
-                .ForMember(a => a.BookingId, b => b.ResolveUsing(a => a.Id));
+                .ForMember(a => a.BookingId, b => b.ResolveUsing(a => a.BookingId));
 
             CreateMap<TimeTrackingLogger, TimeTrackerDetails>();
 
@@ -28,6 +28,7 @@ namespace DevHub.BLL.ConfigServices
             CreateMap<AspNetUserClaims, IdentityUserClaim<string>>();
             CreateMap<ApplicationUser, AspNetUsers>();
             CreateMap<MembershipModel, ApplicationUser>();
+            CreateMap<ScheduleModel, TimeConflictModel>();
         }
     }
 

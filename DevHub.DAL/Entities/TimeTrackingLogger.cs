@@ -5,7 +5,7 @@ namespace DevHub.DAL.Entities
 {
     public partial class TimeTrackingLogger
     {
-        public int LogId { get; set; }
+        public int TimeTrackerId { get; set; }
         public int BookingId { get; set; }
         public TimeSpan TimeIn { get; set; }
         public TimeSpan? TimeOut { get; set; }

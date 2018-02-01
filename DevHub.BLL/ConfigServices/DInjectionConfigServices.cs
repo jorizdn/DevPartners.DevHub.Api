@@ -27,6 +27,8 @@ namespace DevHub.BLL.ConfigServices
             services.AddTransient<ITimeTrackerInterface, TimeTrackerRepository>();
             services.AddTransient<IUserInterface, UserRepository>();
             services.AddTransient<IAccountInterface, AccountRepository>();
+            services.AddTransient<IInventoryInterface, InventoryRepository>();
+            services.AddTransient<IProductInterface, ProductRepository>();
 
             return services;
         }

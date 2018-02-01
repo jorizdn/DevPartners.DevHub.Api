@@ -5,7 +5,7 @@ namespace DevHub.DAL.Entities
 {
     public partial class BookLog
     {
-        public int Id { get; set; }
+        public int BookingId { get; set; }
         public int ClientId { get; set; }
         public byte? BookingType { get; set; }
         public Guid? Guid { get; set; }

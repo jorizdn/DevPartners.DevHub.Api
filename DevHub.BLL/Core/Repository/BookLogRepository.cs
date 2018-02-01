@@ -35,21 +35,27 @@ namespace DevHub.BLL.Core.Repository
             var isClientExists = clientEmail != null;
             var book = new BookLogInfo() { };
             var client = new ClientMaster();
+            var isContactsEmpty = model.ContactNumber.Count < 1;
 
             var booklog = _mapper.Map<BookLog>(model);
             booklog.Guid = Guid.NewGuid();
             model.RefCode = booklog.Guid.ToString();
             booklog.BookingType = Convert.ToByte(model.BookType);
+            model.HaveBookedBefore = isClientExists ? true : false;
             booklog.BookStatus = model.BookStatus < 1 ? Convert.ToByte((int)BookStatusEnum.Pending) : Convert.ToByte(model.BookStatus);
             if (!model.HaveBookedBefore && !isClientExists)
             {
                 client = _mapper.Map<ClientMaster>(model);
                 var contacts = model.ContactNumber.ToArray();
+
                 client.ContactNumber1 = contacts[0].ContactNumber;
-                client.ContactNumber2 = contacts[1].ContactNumber;
+                if (model.ContactNumber.Count > 1)
+                { 
+                    client.ContactNumber2 = contacts[1].ContactNumber;
+                }
 
                 _context.Add(client);
-                //_context.SaveChanges();
+                _context.SaveChanges();
 
                 booklog.ClientId = client.ClientId;
 
@@ -59,12 +65,18 @@ namespace DevHub.BLL.Core.Repository
                 if (isClientExists)
                 {
                     booklog.ClientId = clientEmail.ClientId;
-                    
-                    clientEmail.ContactNumber1 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(0).ContactNumber) ? client.ContactNumber1 : model.ContactNumber.ElementAt(0).ContactNumber;
-                    clientEmail.ContactNumber2 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(1).ContactNumber) ? client.ContactNumber2 : model.ContactNumber.ElementAt(1).ContactNumber;
+
+                    if (!isContactsEmpty)
+                    {
+                        clientEmail.ContactNumber1 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(0).ContactNumber) ? client.ContactNumber1 : model.ContactNumber.ElementAt(0).ContactNumber;
+                        if (model.ContactNumber.Count > 1)
+                        {
+                            clientEmail.ContactNumber2 = string.IsNullOrEmpty(model.ContactNumber.ElementAt(1).ContactNumber) ? client.ContactNumber2 : model.ContactNumber.ElementAt(1).ContactNumber;
+                        }
+                    }
 
                     _context.Update(clientEmail);
-                    //_context.SaveChanges();
+                    _context.SaveChanges();
                 }
                 else
                 {
@@ -102,7 +114,7 @@ namespace DevHub.BLL.Core.Repository
             };
 
             _context.Add(booklog);
-            //_context.SaveChanges();
+            _context.SaveChanges();
 
             if (model.BookType == (int)BookingTypeEnum.DevHub)
             {
@@ -111,7 +123,7 @@ namespace DevHub.BLL.Core.Repository
                     UserInfo = model,
                     Client = isClientExists ? clientEmail : client,
                     Uri = uri,
-                    Id = booklog.Id
+                    Id = booklog.BookingId
                 };
                 await _email.SendEmail(_method.GetApproveEmailParameter(emailParams, false),"");
                 await _email.SendEmail(_method.GetApproveEmailParameter(emailParams,  true),"");
@@ -120,18 +132,26 @@ namespace DevHub.BLL.Core.Repository
             return book;
         }
 
-        public IEnumerable<BookLog> GetBookLog()
+        public IEnumerable<BookLogInfo> GetBookLog()
         {
-            return _context.BookLog;
+            var booklog = new List<BookLogInfo>();
+            foreach (var item in _context.BookLog)
+            {
+                booklog.Add(new BookLogInfo() { BookLog = item, Client = _context.ClientMaster.Find(item.ClientId) });
+            }
+
+            return booklog;
         }
-        
-        public BookLog GetBookLogById(string Id)
+
+        public BookLogInfo GetBookLogById(string Id)
         {
             var id = _guid.GetBookLogByGuid(Id);
 
             try
             {
-                return _context.BookLog.Find(id.Id);
+                var booklog = _context.BookLog.Find(id.BookingId);
+                var client = _context.ClientMaster.Find(booklog.ClientId);
+                return new BookLogInfo() { BookLog = booklog, Client = client };
             }
             catch (Exception)
             {
@@ -150,6 +170,61 @@ namespace DevHub.BLL.Core.Repository
             await _email.SendEmail(_method.GetConfirmEmailParameter(book, false, client), username);
 
             return book;
+        }
+
+        public BookModel GetBookLogSchedules(ScheduleModel model)
+        {
+            var timeConflict = _mapper.Map<TimeConflictModel>(model);
+            timeConflict.IsConference = true;
+            BookModel book = new BookModel();
+            book.Conference = new List<BookLog>();
+            book.Meeting = new List<BookLog>();
+
+            var timeConflictItems = _method.IsTimeConflict(timeConflict);
+            if (model.TimeIn != TimeSpan.Zero && model.TimeOut != TimeSpan.Zero)
+            {
+                var data = _context.BookLog
+                            .Where(a => a.SpaceType == (int)SpaceEnum.ConferenceMeeting && ((a.TimeIn == model.TimeIn || a.TimeIn > model.TimeIn) || (a.TimeOut == model.TimeOut || a.TimeIn < model.TimeOut)) && a.DateOfArrival >= DateTime.UtcNow)
+                            .OrderBy(a => a.DateOfArrival)
+                            .ToList();
+                book.ConflictItems = timeConflictItems;
+                foreach (var item in book.ConflictItems.ConflictedItem)
+                {
+                    if (item.RoomType == "Conference")
+                    {
+                        book.Conference.Add(item);
+                    }
+                    else
+                    {
+                        book.Meeting.Add(item);
+                    }
+                }
+                return book;
+            }
+            else
+            {
+                book.Data = model.IsFutureSchedOnly ?
+                                _context.BookLog
+                                .Where(a => a.SpaceType == (int)SpaceEnum.ConferenceMeeting && a.DateOfArrival >= DateTime.UtcNow.AddDays(-6))
+                                .OrderBy(a => a.DateOfArrival) :
+                                _context.BookLog
+                                .Where(a => a.SpaceType == (int)SpaceEnum.ConferenceMeeting)
+                                .OrderBy(a => a.DateOfArrival);
+
+                foreach (var item in book.Data)
+                {
+                    if (item.RoomType == "Conference")
+                    {
+                        book.Conference.Add(item);
+                    }
+                    else
+                    {
+                        book.Meeting.Add(item);
+                    }
+                }
+                return book;
+            }
+
         }
 
     }

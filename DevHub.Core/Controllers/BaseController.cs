@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -16,6 +12,7 @@ namespace DevHub.Core.Controllers
         private const string Urlhelper = "UrlHelper";
         protected string UserName;
         protected bool IsInRole = false;
+        protected bool IsLoggedin = false;
         protected IIdentity UserIdentity;
         protected string UserRoleString = "";
         public override void OnActionExecuting(ActionExecutingContext context)

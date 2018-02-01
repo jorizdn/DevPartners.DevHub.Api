@@ -1,4 +1,5 @@
-﻿using DevHub.DAL.Entities;
+﻿using DevHub.BLL.Core.Interface;
+using DevHub.DAL.Entities;
 using DevHub.DAL.Identity;
 using DevHub.DAL.Models;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +19,14 @@ namespace DevHub.BLL.Methods
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole<string>> _roleManager;
         private readonly IOptions<AppSettingModel> _options;
+        private readonly DevHubContext _context;
 
-        public MethodLibrary(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<string>> roleManager, IOptions<AppSettingModel> options)
+        public MethodLibrary(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<string>> roleManager, IOptions<AppSettingModel> options, DevHubContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _options = options;
+            _context = context;
         }
 
         public string GetSpaceName(int space)
@@ -403,6 +407,37 @@ namespace DevHub.BLL.Methods
                 default:
                     return "";
             }
+        }
+
+        public TimeConflictReturnModel IsTimeConflict(TimeConflictModel model)
+        {
+            var data = model.IsConference ? _context.BookLog.Where(a => a.DateOfArrival.Value.Day == model.Date.Day && a.SpaceType == (int)SpaceEnum.ConferenceMeeting) : _context.BookLog.Where(a => a.DateOfArrival.Value.Day == model.Date.Day);
+            var conflictedItems = new List<BookLog>();
+            TimeConflictReturnModel conflictModel = new TimeConflictReturnModel();
+            foreach (var item in data)
+            {
+                var isTimeInOnScope = (model.TimeIn >= item.TimeIn && model.TimeIn <= item.TimeOut);
+                var isTimeOutOnScope = (model.TimeOut >= item.TimeIn && model.TimeOut <= item.TimeOut);
+
+                if (isTimeInOnScope || isTimeOutOnScope)
+                {
+                    conflictedItems.Add(item);
+                }
+            }
+
+            if (conflictedItems.Count > 0)
+            {
+                conflictModel.IsConflict = true;
+                conflictModel.ConflictedItem = conflictedItems;
+            }
+            else
+            {
+                conflictModel.IsConflict = false;
+                conflictModel.ConflictedItem = conflictedItems;
+            }
+
+            return conflictModel;
+
         }
 
     }

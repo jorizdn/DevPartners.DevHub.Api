@@ -47,6 +47,7 @@ namespace DevHub.Core
             services.Configure<AppSettingModel>(_configurationRoot.GetSection("SwaggerAuthentication"));
             services.Configure<AppSettingModel>(_configurationRoot.GetSection("Email"));
             services.Configure<AppSettingModel>(_configurationRoot.GetSection("WebConfig"));
+            services.Configure<AppSettingModel>(_configurationRoot.GetSection("ConnectionStrings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

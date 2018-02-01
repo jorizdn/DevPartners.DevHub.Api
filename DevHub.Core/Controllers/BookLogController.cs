@@ -29,12 +29,12 @@ namespace DevHub.Core.Controllers
         [HttpGet("Get")]
         public async Task<IActionResult> GetAsync(string Id)
         {
-            var token = await _checkForgery.CheckToken();
+            //var token = await _checkForgery.CheckToken();
 
-            if (token != null)
-            {
-                return token;
-            }
+            //if (token != null)
+            //{
+            //    return token;
+            //}
 
             if (string.IsNullOrEmpty(Id))
             {
@@ -69,12 +69,12 @@ namespace DevHub.Core.Controllers
         public async Task<IActionResult> AddAsync([FromBody] UserInfo model)
         {
             var uri = HttpContext.Request.Host.Value;
-            var token = await _checkForgery.CheckToken();
+            //var token = await _checkForgery.CheckToken();
 
-            if (token != null)
-            {
-                return token;
-            }
+            //if (token != null)
+            //{
+            //    return token;
+            //}
 
             var validate = _validate.IsUserBookInfoValid(model);
             if (validate.isValid)
@@ -116,12 +116,12 @@ namespace DevHub.Core.Controllers
         [HttpPost("Confirm")]
         public async Task<IActionResult> ConfirmAsync(string id)
         {
-            var token = await _checkForgery.CheckToken();
+            //var token = await _checkForgery.CheckToken();
 
-            if (token != null)
-            {
-                return token;
-            }
+            //if (token != null)
+            //{
+            //    return token;
+            //}
 
             var result = await _book.ConfirmBookAsync(id, UserName);
             if (result != null)
@@ -137,6 +137,30 @@ namespace DevHub.Core.Controllers
                 return NotFound(new
                 {
                     Status = result
+                });
+            }
+        }
+
+        [HttpGet("Schedules")]
+        public IActionResult GetBookLogSchedule(ScheduleModel model)
+        {
+            var validate = _validate.IsTimeIntervalValid(model.TimeIn, model.TimeOut);
+
+            if (validate.isValid)
+            {
+                return Ok(new
+                {
+                    data = _book.GetBookLogSchedules(model),
+                    status = _response.ShowHttpResponse(_response.Ok)
+                });
+            }
+            else
+            {
+                var response = _response.ShowHttpResponse(_response.UnprocessableEntity);
+                response.Details = validate.Message;
+                return BadRequest(new
+                {
+                    state = response
                 });
             }
         }
