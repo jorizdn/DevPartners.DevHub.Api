@@ -13,12 +13,14 @@ namespace DevHub.Core.Controllers
         private readonly IProductInterface _product;
         private readonly HttpResponses _response;
         private readonly Validators _validate;
+        private readonly QueryMethod _query;
 
-        public ProductController(IProductInterface product, HttpResponses response, Validators validate)
+        public ProductController(IProductInterface product, HttpResponses response, Validators validate, QueryMethod query)
         {
             _product = product;
             _response = response;
             _validate = validate;
+            _query = query;
         }
 
         [HttpPost("CreateUpdate")]
@@ -31,5 +33,25 @@ namespace DevHub.Core.Controllers
                 states = result.Action == 1 ? _response.ShowHttpResponse(_response.Created) : _response.ShowHttpResponse(_response.Updated)
             });
         }
+
+        [HttpGet("Get")]
+        public IActionResult Get(int? id)
+        {
+            if (id > 0)
+            {
+                return Ok(new
+                {
+                    data = _product.GetById(id.Value)
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    data = _product.Get()
+                });
+            }
+        }
+
     }
 }

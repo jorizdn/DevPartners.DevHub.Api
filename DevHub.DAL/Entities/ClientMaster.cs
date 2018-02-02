@@ -12,5 +12,6 @@ namespace DevHub.DAL.Entities
         public string Email { get; set; }
         public string ContactNumber1 { get; set; }
         public string ContactNumber2 { get; set; }
+        public string Profession { get; set; }
     }
 }

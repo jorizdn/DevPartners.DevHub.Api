@@ -24,4 +24,18 @@ namespace DevHub.DAL.Models
         public StatusResponse State { get; set; }
     }
 
+    public class spInventoryModel
+    {
+        public int RecId { get; set; }
+        public int ProductID { get; set; }
+        public string ProductName { get; set; }
+        public double Quantity { get; set; }
+        public string AddedBy { get; set; }
+        public DateTime DateAdded { get; set; }
+        public string ModifiedBy { get; set; }
+        public DateTime DateModified { get; set; }
+    }
+
+
+
 }

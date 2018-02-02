@@ -29,6 +29,7 @@ namespace DevHub.BLL.ConfigServices
             CreateMap<ApplicationUser, AspNetUsers>();
             CreateMap<MembershipModel, ApplicationUser>();
             CreateMap<ScheduleModel, TimeConflictModel>();
+
         }
     }
 

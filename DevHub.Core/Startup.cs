@@ -3,6 +3,7 @@ using DevHub.BLL.ConfigServices;
 using DevHub.BLL.Helpers;
 using DevHub.BLL.Middlewares;
 using DevHub.DAL.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,7 @@ namespace DevHub.Core
             services.RegisterCookieAuthentication();
             services.RegisterAntiForgery();
             services.RegisterSwagger();
+            services.RegisterJwtAuth();
 
             services.Configure<AppSettingModel>(_configurationRoot.GetSection("SwaggerAuthentication"));
             services.Configure<AppSettingModel>(_configurationRoot.GetSection("Email"));
@@ -60,6 +62,8 @@ namespace DevHub.Core
                 app.UseDeveloperExceptionPage();
             }
 
+            
+
             // Shows UseCors with CorsPolicyBuilder.
             app.UseCors(builder =>
                builder.WithOrigins("http://localhost").AllowAnyHeader()
@@ -69,6 +73,7 @@ namespace DevHub.Core
             app.UseStatusCodePages();
 
             app.UseSwaggerAuthentication();
+            app.UseAuthentication();
 
             //Contains UseMvc
             app.SetAppConfig();

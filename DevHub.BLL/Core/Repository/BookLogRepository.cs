@@ -137,7 +137,17 @@ namespace DevHub.BLL.Core.Repository
             var booklog = new List<BookLogInfo>();
             foreach (var item in _context.BookLog)
             {
-                booklog.Add(new BookLogInfo() { BookLog = item, Client = _context.ClientMaster.Find(item.ClientId) });
+                var period = _method.GetPeriod(item.DateOfArrival.Value, item.DateOfDeparture.Value, item.TimeIn.Value, item.TimeOut.Value);
+                var transaction = new TransactionInfo()
+                {
+                    Bill = _method.GetBill(item),
+                    Space = _method.GetSpaceName(item.SpaceType.Value),
+                    Duration = _method.GetDuration(item),
+                    Rate = _method.GetBookRate(item.FrequencyType.Value, item.SpaceType.Value),
+                    Period = period.DateArrival + " " + period.TimeIn + " - " + period.DateDeparture + " " + period.TimeOut
+                };
+
+                booklog.Add(new BookLogInfo() { BookLog = item, Client = _context.ClientMaster.Find(item.ClientId), Transaction = transaction });
             }
 
             return booklog;
@@ -151,7 +161,18 @@ namespace DevHub.BLL.Core.Repository
             {
                 var booklog = _context.BookLog.Find(id.BookingId);
                 var client = _context.ClientMaster.Find(booklog.ClientId);
-                return new BookLogInfo() { BookLog = booklog, Client = client };
+
+                var period = _method.GetPeriod(booklog.DateOfArrival.Value, booklog.DateOfDeparture.Value, booklog.TimeIn.Value, booklog.TimeOut.Value);
+                var transaction = new TransactionInfo()
+                {
+                    Bill = _method.GetBill(booklog),
+                    Space = _method.GetSpaceName(booklog.SpaceType.Value),
+                    Duration = _method.GetDuration(booklog),
+                    Rate = _method.GetBookRate(booklog.FrequencyType.Value, booklog.SpaceType.Value),
+                    Period = period.DateArrival + " " + period.TimeIn + " - " + period.DateDeparture + " " + period.TimeOut
+                };
+
+                return new BookLogInfo() { BookLog = booklog, Client = client, Transaction = transaction };
             }
             catch (Exception)
             {
@@ -168,6 +189,9 @@ namespace DevHub.BLL.Core.Repository
             var client = _context.ClientMaster.Find(book.ClientId);
 
             await _email.SendEmail(_method.GetConfirmEmailParameter(book, false, client), username);
+
+            _context.Update(book);
+            _context.SaveChanges();
 
             return book;
         }

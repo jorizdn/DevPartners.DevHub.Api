@@ -9,5 +9,7 @@ namespace DevHub.BLL.Core.Interface
     public interface IInventoryInterface
     {
         InventoryReturnModel CreateUpdate(InventoryModel model, string username);
+        spInventoryModel GetById(int id);
+        IEnumerable<spInventoryModel> Get(DateTime dateFrom, DateTime dateTo);
     }
 }

@@ -29,6 +29,7 @@ namespace DevHub.BLL.ConfigServices
             services.AddTransient<IAccountInterface, AccountRepository>();
             services.AddTransient<IInventoryInterface, InventoryRepository>();
             services.AddTransient<IProductInterface, ProductRepository>();
+            services.AddTransient<IStaticInterface, StaticRepository>();
 
             return services;
         }

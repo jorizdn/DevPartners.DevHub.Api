@@ -31,6 +31,7 @@ namespace DevHub.DAL.Models
         public int BookStatus { get; set; }
         public int BookType { get; set; }
         public string RefCode { get; set; }
+        public string Profession { get; set; }
     }
 
     public class ContactUserInfo
@@ -44,6 +45,7 @@ namespace DevHub.DAL.Models
         public BookLog BookLog { get; set; }
         public BookInfo BookInfo { get; set; }
         public StatusResponse State { get; set; }
+        public TransactionInfo Transaction { get; set; }
     }
 
     public class BookInfo
@@ -108,6 +110,15 @@ namespace DevHub.DAL.Models
         public TimeConflictReturnModel ConflictItems { get; set; }
         public List<BookLog> Conference { get; set; }
         public List<BookLog> Meeting { get; set; }
+    }
+
+    public class TransactionInfo
+    {
+        public string Bill { get; set; }
+        public string Duration { get; set; }
+        public string Period { get; set; }
+        public string Rate { get; set; }
+        public string Space { get; set; }
     }
 
 }

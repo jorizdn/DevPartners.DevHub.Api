@@ -89,6 +89,10 @@ namespace DevHub.DAL.Entities
                 entity.Property(e => e.MiddleName)
                     .HasMaxLength(40)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Profession)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<InvAddProducts>(entity =>

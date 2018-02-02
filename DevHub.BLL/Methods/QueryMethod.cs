@@ -10,6 +10,7 @@ using Dapper;
 using System.Data.SqlClient;
 using DevHub.BLL.Helpers;
 using static DevHub.BLL.Helpers.HttpResponses;
+using System.Globalization;
 
 namespace DevHub.BLL.Methods
 {
@@ -35,62 +36,6 @@ namespace DevHub.BLL.Methods
                 return null;
             }
         }
-
-        public InventoryReturnModel CreateUpdateInventory(InventoryModel model,  string username)
-        {
-            using (var con = GetDbConnection(_options.Value.DefaultConnection))
-            {
-                var result = con.Query<int?>("DevHub_AddProducts_Set",
-                            new
-                            {
-                                iIntRecId = model.InventoryId,
-                                iIntProduct = model.ProductId,
-                                iDecQuantity = model.Quantity,
-                                UserName = username
-                            },
-                            commandType: CommandType.StoredProcedure).FirstOrDefault() ?? 0;
-
-
-                if (result > 0)
-                {
-                    model.Username = username;
-                    return new InventoryReturnModel() { Inventory = model, Action = result };
-                }
-                else
-                {
-                    return null;
-                }
-                
-            }
-        }
-
-        public ProductReturnModel CreateUpdateProduct(ProductModel model)
-        {
-            using (var con = GetDbConnection(_options.Value.DefaultConnection))
-            {
-                var result = con.Query<int?>("DevHub_ProductDesc_Set",
-                    new
-                    {
-                        iIntProdId = model.ProductId,
-                        iIntCategoryID = model.CategoryId,
-                        iStrProductDescription = model.Description,
-                        iStrProductName = model.Name,
-                        iDecSRP = model.Price,
-                        iIntUom_Id = model.UnitMeasure
-                    },
-                    commandType: CommandType.StoredProcedure).FirstOrDefault() ?? 0;
-
-                if (result > 0)
-                {
-                    return new ProductReturnModel() { Product = model, Action = result };
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
 
     }
 }

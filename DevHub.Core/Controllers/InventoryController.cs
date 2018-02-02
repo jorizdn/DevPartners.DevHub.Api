@@ -3,6 +3,7 @@ using DevHub.BLL.Helpers;
 using DevHub.BLL.Methods;
 using DevHub.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace DevHub.Core.Controllers
 {
@@ -42,6 +43,25 @@ namespace DevHub.Core.Controllers
                 return BadRequest(new
                 {
                     status = response
+                });
+            }
+        }
+
+        [HttpGet("Get")]
+        public IActionResult Get(int id, DateTime dateFrom, DateTime dateTo)
+        {
+            if (id > 0)
+            {
+                return Ok(new
+                {
+                    data = _inventory.GetById(id)
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    data = _inventory.Get(dateFrom, dateTo)
                 });
             }
         }

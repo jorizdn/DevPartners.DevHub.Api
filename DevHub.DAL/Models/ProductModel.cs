@@ -19,4 +19,17 @@ namespace DevHub.DAL.Models
         public ProductModel Product { get; set; }
         public int Action { get; set; }
     }
+
+    public class spProductModel
+    {
+        public int ProductID { get; set; }
+        public int CategoryID { get; set; }
+        public string CategoryDesc { get; set; }
+        public string ProductName { get; set; }
+        public string ProductDescription { get; set; }
+        public double SRP { get; set; }
+        public int uom_Id { get; set; }
+        public string uom_Desc { get; set; }
+    }
+
 }
